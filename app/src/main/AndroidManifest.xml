@@ -15,6 +15,9 @@
         android:theme="@style/Theme.RecyclerviewTest"
         tools:targetApi="31">
         <activity
+            android:name=".editActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddEditOne"
             android:exported="false" />
         <activity

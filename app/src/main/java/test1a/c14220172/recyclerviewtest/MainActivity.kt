@@ -1,25 +1,52 @@
 package test1a.c14220172.recyclerviewtest
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var activityList: MutableList<activity> // Use MutableList for adding new items
+    private lateinit var sp : SharedPreferences
+
+    private fun loadActivitiesFromSharedPreferences(): MutableList<activity> {
+        val json = sp.getString("SAVED_ACTIVITIES", "[]") ?: "[]"
+        return Gson().fromJson(json, ArrayList::class.java) as ArrayList<activity>
+    }
+
+
+    private val editActivityLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val updatedActivity = result.data?.getParcelableExtra<activity>("UPDATED_ACTIVITY")
+                if (updatedActivity != null) {
+                    // Cari item di daftar berdasarkan id
+                    val index = activityList.indexOfFirst { it.id == updatedActivity.id }
+                    if (index != -1) {
+                        // Perbarui data di daftar
+                        activityList[index] = updatedActivity
+                        recyclerView.adapter?.notifyItemChanged(index)
+                    }
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        sp = getSharedPreferences("dataSP", MODE_PRIVATE)
         recyclerView = findViewById(R.id.lv_activityList)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -30,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         // Set the adapter
-        recyclerView.adapter = ActivityAdapter(activityList)
+        recyclerView.adapter = ActivityAdapter(activityList, editActivityLauncher, sp)
 
         val buttonAdd = findViewById<Button>(R.id.btn_add)
         buttonAdd.setOnClickListener {
@@ -61,7 +88,8 @@ class MainActivity : AppCompatActivity() {
             activityList.add(newActivity)
 
             // Notify the adapter that the data has changed
-            recyclerView.adapter?.notifyDataSetChanged()
+            recyclerView.adapter?.notifyItemInserted(activityList.size - 1)
+
         }
     }
 }
