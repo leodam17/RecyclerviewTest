@@ -1,5 +1,6 @@
 package test1a.c14220172.recyclerviewtest
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
+import java.util.Calendar
 
 class ActivityAdapter(
     private val activityList: MutableList<activity>,
@@ -63,7 +65,7 @@ class ActivityAdapter(
             removeItem(position)
         }
 
-        holder.btnStart.setOnClickListener{
+        holder.btnStart.setOnClickListener {
             activity.status = "Selesai"
             notifyItemChanged(position)
         }

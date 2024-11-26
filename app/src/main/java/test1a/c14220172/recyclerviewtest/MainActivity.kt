@@ -69,11 +69,11 @@ class MainActivity : AppCompatActivity() {
         // Initialize the list properly
         activityList = loadActivitiesFromSharedPreferences().takeIf { it.isNotEmpty() }
             ?: mutableListOf(
-                activity(1, "Projek PABA", "https://i.pinimg.com/736x/85/1e/6f/851e6f9ff3fe37ce8c9299a15cd023f1.jpg", "Membuat Proposal", "28-November-2024", "Belum"),
-                activity(2, "Projek WFD", "https://pbs.twimg.com/media/CXgPQwzWEAE_5w-.jpg", "Membuat Event Organizer Website", "30-November-2024", "Belum")
+                activity(1, "Projek PABA", "https://i.pinimg.com/736x/85/1e/6f/851e6f9ff3fe37ce8c9299a15cd023f1.jpg", "Membuat Proposal", "2024-11-28", "Belum"),
+                activity(2, "Projek WFD", "https://pbs.twimg.com/media/CXgPQwzWEAE_5w-.jpg", "Membuat Event Organizer Website", "2024-11-30", "Belum")
             )
 
-        // Set the adapter
+                        // Set the adapter
         recyclerView.adapter = ActivityAdapter(activityList, editActivityLauncher, sp)
 
         val buttonAdd = findViewById<Button>(R.id.btn_add)
