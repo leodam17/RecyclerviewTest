@@ -1,5 +1,6 @@
 package test1a.c14220172.recyclerviewtest
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.view.LayoutInflater
@@ -8,9 +9,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 
 class ActivityAdapter(
@@ -66,7 +69,7 @@ class ActivityAdapter(
         }
 
         holder.btnSimpan.setOnClickListener {
-            saveActivityToSharedPreferences(activity)
+            saveOrRemoveActivity(activity, holder.itemView.context)
         }
 
         holder.btnEdit.setOnClickListener {
@@ -85,21 +88,48 @@ class ActivityAdapter(
         notifyItemRemoved(position)
     }
 
-    private fun saveActivityToSharedPreferences(activity: activity) {
+    private fun saveOrRemoveActivity(activity: activity, context: Context) {
         // Ambil data yang sudah ada, atau buat array kosong jika belum ada data
-        val json = sharedPreferences.getString("SAVED_ACTIVITIES", "[]") ?: "[]"
+        val json = sharedPreferences.getString("SAVED_NEW121", "") ?: ""
 
-        // Mengonversi JSON ke dalam List activity
-        val savedActivities = Gson().fromJson(json, ArrayList::class.java) as ArrayList<activity>
+        // Buat list baru untuk menyimpan aktivitas yang sudah ada
+        val savedActivities = mutableListOf<String>()
 
-        // Cek apakah activity sudah ada di list berdasarkan ID-nya
-        if (!savedActivities.any { it.id == activity.id }) {
-            savedActivities.add(activity) // Menambahkan activity ke dalam list jika belum ada
+        // Jika ada data sebelumnya, pecah menjadi list berdasarkan pemisah
+        if (json.isNotEmpty()) {
+            savedActivities.addAll(json.split("| INI PEMISAH |"))
         }
 
-        // Mengonversi list kembali ke JSON dan menyimpannya ke SharedPreferences
-        val updatedJson = Gson().toJson(savedActivities)
-        sharedPreferences.edit().putString("SAVED_ACTIVITIES", updatedJson).apply()
+        // Serialize activity object to JSON
+        val activityJson = Gson().toJson(activity)
+
+        // Cek apakah activity sudah ada di dalam list
+        if (savedActivities.contains(activityJson)) {
+            // Jika sudah ada, hapus activity tersebut
+            savedActivities.remove(activityJson)
+
+            // Update SharedPreferences dengan data yang telah diperbarui
+            val updatedJson = savedActivities.joinToString("| INI PEMISAH |")
+            sharedPreferences.edit().putString("SAVED_NEW121", updatedJson).apply()
+
+            // Menampilkan Toast bahwa activity telah dihapus
+            Toast.makeText(context, "Activity removed", Toast.LENGTH_SHORT).show()
+
+        } else {
+            // Jika belum ada, tambahkan ke list
+            savedActivities.add(activityJson)
+
+            // Update SharedPreferences dengan data yang telah diperbarui
+            val updatedJson = savedActivities.joinToString("| INI PEMISAH |")
+            sharedPreferences.edit().putString("SAVED_NEW121", updatedJson).apply()
+
+            // Menampilkan Toast bahwa activity telah disimpan
+            Toast.makeText(context, "Activity saved", Toast.LENGTH_SHORT).show()
+        }
     }
+
+
+
+
 
 }

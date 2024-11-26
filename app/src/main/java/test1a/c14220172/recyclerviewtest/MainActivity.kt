@@ -20,9 +20,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sp : SharedPreferences
 
     private fun loadActivitiesFromSharedPreferences(): MutableList<activity> {
-        val json = sp.getString("SAVED_ACTIVITIES", "[]") ?: "[]"
-        return Gson().fromJson(json, ArrayList::class.java) as ArrayList<activity>
+        // Ambil data yang sudah ada
+        val json = sp.getString("SAVED_NEW121", "") ?: ""
+
+        // Buat list untuk menyimpan activities
+        val savedActivities = mutableListOf<activity>()
+
+        // Jika ada data sebelumnya, pecah menjadi list berdasarkan separator
+        if (json.isNotEmpty()) {
+            // Pisahkan string berdasarkan separator dan deserialisasi tiap bagian ke dalam activity
+            val activityJsonList = json.split("| INI PEMISAH |")
+            for (activityJson in activityJsonList) {
+                val activity = Gson().fromJson(activityJson, activity::class.java)
+                savedActivities.add(activity)
+            }
+        }
+
+        return savedActivities
     }
+
 
 
     private val editActivityLauncher =
@@ -51,10 +67,11 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         // Initialize the list properly
-        activityList = mutableListOf(
-            activity(1, "Projek PABA", "https://i.pinimg.com/736x/85/1e/6f/851e6f9ff3fe37ce8c9299a15cd023f1.jpg", "Membuat Proposal", "28-November-2024", "Belum"),
-            activity(2, "Projek WFD", "https://pbs.twimg.com/media/CXgPQwzWEAE_5w-.jpg", "Membuat Event Organizer Website", "30-November-2024", "Belum")
-        )
+        activityList = loadActivitiesFromSharedPreferences().takeIf { it.isNotEmpty() }
+            ?: mutableListOf(
+                activity(1, "Projek PABA", "https://i.pinimg.com/736x/85/1e/6f/851e6f9ff3fe37ce8c9299a15cd023f1.jpg", "Membuat Proposal", "28-November-2024", "Belum"),
+                activity(2, "Projek WFD", "https://pbs.twimg.com/media/CXgPQwzWEAE_5w-.jpg", "Membuat Event Organizer Website", "30-November-2024", "Belum")
+            )
 
         // Set the adapter
         recyclerView.adapter = ActivityAdapter(activityList, editActivityLauncher, sp)
@@ -89,6 +106,7 @@ class MainActivity : AppCompatActivity() {
 
             // Notify the adapter that the data has changed
             recyclerView.adapter?.notifyItemInserted(activityList.size - 1)
+
 
         }
     }
