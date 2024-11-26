@@ -9,6 +9,6 @@ data class activity(
     val nama : String,
     val imageUrl : String,
     val deskripsi : String,
-    val deadline : String,
+    var deadline : String,
     var status: String
 ) : Parcelable
