@@ -21,7 +21,7 @@ import java.util.Calendar
 class ActivityAdapter(
     private val activityList: MutableList<activity>,
     private val editActivityLauncher: ActivityResultLauncher<Intent>,
-    private val sharedPreferences: SharedPreferences // Add SharedPreferences here
+    private val sharedPreferences: SharedPreferences
 ) : RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder>() {
 
     inner class ActivityViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -91,41 +91,30 @@ class ActivityAdapter(
     }
 
     private fun saveOrRemoveActivity(activity: activity, context: Context) {
-        // Ambil data yang sudah ada, atau buat array kosong jika belum ada data
         val json = sharedPreferences.getString("SAVED_NEW121", "") ?: ""
 
-        // Buat list baru untuk menyimpan aktivitas yang sudah ada
         val savedActivities = mutableListOf<String>()
 
-        // Jika ada data sebelumnya, pecah menjadi list berdasarkan pemisah
         if (json.isNotEmpty()) {
             savedActivities.addAll(json.split("| INI PEMISAH |"))
         }
 
-        // Serialize activity object to JSON
         val activityJson = Gson().toJson(activity)
 
-        // Cek apakah activity sudah ada di dalam list
         if (savedActivities.contains(activityJson)) {
-            // Jika sudah ada, hapus activity tersebut
             savedActivities.remove(activityJson)
 
-            // Update SharedPreferences dengan data yang telah diperbarui
             val updatedJson = savedActivities.joinToString("| INI PEMISAH |")
             sharedPreferences.edit().putString("SAVED_NEW121", updatedJson).apply()
 
-            // Menampilkan Toast bahwa activity telah dihapus
             Toast.makeText(context, "Activity removed", Toast.LENGTH_SHORT).show()
 
         } else {
-            // Jika belum ada, tambahkan ke list
             savedActivities.add(activityJson)
 
-            // Update SharedPreferences dengan data yang telah diperbarui
             val updatedJson = savedActivities.joinToString("| INI PEMISAH |")
             sharedPreferences.edit().putString("SAVED_NEW121", updatedJson).apply()
 
-            // Menampilkan Toast bahwa activity telah disimpan
             Toast.makeText(context, "Activity saved", Toast.LENGTH_SHORT).show()
         }
     }

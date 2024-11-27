@@ -32,7 +32,6 @@ class editActivity : AppCompatActivity() {
         val save = findViewById<Button>(R.id.btn_save)
         val imageCalendar = findViewById<ImageView>(R.id.calendar)
 
-        // Ambil data intent untuk diisi ke EditText
         val dataIntent = intent.getParcelableExtra("ACTIVITY_DATA", activity::class.java)
         if (dataIntent != null) {
             name.setText(dataIntent.nama)
@@ -41,17 +40,15 @@ class editActivity : AppCompatActivity() {
             deadline.setText(dataIntent.deadline)
         }
 
-        // Tambahkan DatePickerDialog pada klik EditText deadline
         imageCalendar.setOnClickListener {
             val calendar = Calendar.getInstance()
 
-            // Jika sudah ada nilai sebelumnya, gunakan nilai tersebut
             if (dataIntent != null && dataIntent.deadline.isNotEmpty()) {
                 val dateParts = dataIntent.deadline.split("-")
                 if (dateParts.size == 3) {
                     calendar.set(
                         dateParts[0].toInt(),
-                        dateParts[1].toInt() - 1, // Bulan di Calendar dimulai dari 0
+                        dateParts[1].toInt() - 1,
                         dateParts[2].toInt()
                     )
                 }
@@ -69,7 +66,6 @@ class editActivity : AppCompatActivity() {
             ).show()
         }
 
-        // Tombol save untuk mengembalikan hasil
         save.setOnClickListener {
             val updateActivity = activity(
                 id = dataIntent?.id ?: 0,
