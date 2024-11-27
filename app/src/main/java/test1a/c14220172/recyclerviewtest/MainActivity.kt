@@ -16,19 +16,15 @@ import com.google.gson.Gson
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var activityList: MutableList<activity> // Use MutableList for adding new items
+    private lateinit var activityList: MutableList<activity>
     private lateinit var sp : SharedPreferences
 
     private fun loadActivitiesFromSharedPreferences(): MutableList<activity> {
-        // Ambil data yang sudah ada
         val json = sp.getString("SAVED_NEW121", "") ?: ""
 
-        // Buat list untuk menyimpan activities
         val savedActivities = mutableListOf<activity>()
 
-        // Jika ada data sebelumnya, pecah menjadi list berdasarkan separator
         if (json.isNotEmpty()) {
-            // Pisahkan string berdasarkan separator dan deserialisasi tiap bagian ke dalam activity
             val activityJsonList = json.split("| INI PEMISAH |")
             for (activityJson in activityJsonList) {
                 val activity = Gson().fromJson(activityJson, activity::class.java)
@@ -46,10 +42,8 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK) {
                 val updatedActivity = result.data?.getParcelableExtra<activity>("UPDATED_ACTIVITY")
                 if (updatedActivity != null) {
-                    // Cari item di daftar berdasarkan id
                     val index = activityList.indexOfFirst { it.id == updatedActivity.id }
                     if (index != -1) {
-                        // Perbarui data di daftar
                         activityList[index] = updatedActivity
                         recyclerView.adapter?.notifyItemChanged(index)
                     }
@@ -66,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.lv_activityList)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Initialize the list properly
         activityList = loadActivitiesFromSharedPreferences().takeIf { it.isNotEmpty() }
             ?: mutableListOf(
                 activity(1, "Projek PABA", "https://i.pinimg.com/736x/85/1e/6f/851e6f9ff3fe37ce8c9299a15cd023f1.jpg", "Membuat Proposal", "2024-11-28", "Belum"),
@@ -79,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         val buttonAdd = findViewById<Button>(R.id.btn_add)
         buttonAdd.setOnClickListener {
             val intent = Intent(this@MainActivity, AddEditOne::class.java)
-            startActivityForResult(intent, 1) // Key change here
+            startActivityForResult(intent, 1)
         }
     }
 
@@ -93,9 +86,8 @@ class MainActivity : AppCompatActivity() {
             val deadline = data.getStringExtra("DEADLINE")
             val status = data.getStringExtra("STATUS")
 
-            // Add the new activity to the list
             val newActivity = activity(
-                activityList.size + 1, // This can be replaced with proper unique ID logic
+                activityList.size + 1,
                 activityName ?: "No Name",
                 imageUrl ?: "",
                 deskripsi ?: "No Description",
@@ -104,7 +96,6 @@ class MainActivity : AppCompatActivity() {
             )
             activityList.add(newActivity)
 
-            // Notify the adapter that the data has changed
             recyclerView.adapter?.notifyItemInserted(activityList.size - 1)
 
 

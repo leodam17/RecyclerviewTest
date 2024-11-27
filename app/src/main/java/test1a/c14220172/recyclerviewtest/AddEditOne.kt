@@ -44,13 +44,11 @@ class AddEditOne : AppCompatActivity() {
         }
 
         btnOk.setOnClickListener {
-            // Collect the data from the EditTexts
             val activityName = etActivityName.text.toString()
             val imageUrl = etImageUrl.text.toString()
             val deskripsi = etDeskripsi.text.toString()
             val deadline = tvDeadline.text.toString()
 
-            // Create an Intent to send data back to MainActivity
             val intent = Intent().apply {
                 putExtra("ACTIVITY_NAME", activityName)
                 putExtra("IMAGE_URL", imageUrl)
@@ -58,30 +56,25 @@ class AddEditOne : AppCompatActivity() {
                 putExtra("DEADLINE", deadline)
             }
 
-            // Set the result with the data
             setResult(RESULT_OK, intent)
-            finish()  // Close the AddEditOne activity and return to MainActivity
+            finish()
         }
 
         val buttonCancel = findViewById<Button>(R.id.btn_cancel)
         buttonCancel.setOnClickListener {
-            // Close the AddEditOne activity without sending any result
             setResult(RESULT_CANCELED)
             finish()
         }
     }
     private fun showDatePicker() {
-        // Get current date
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        // Show DatePickerDialog
         val datePickerDialog = DatePickerDialog(
             this,
             { _, selectedYear, selectedMonth, selectedDay ->
-                // Update the TextView with selected date
                 val formattedDate = "$selectedDay-${selectedMonth + 1}-$selectedYear"
                 tvDeadline.text = formattedDate
             },
